@@ -52,6 +52,7 @@ def edit_character(char_id, name=None, race=None, char_class=None, background=No
     session.commit()
     return f"Character '{character.name}' (ID: {char_id}) updated successfully!"
 
+
 def delete_character(char_id):
     """Deletes a character from the database by ID."""
     character = session.query(Character).filter_by(id=char_id).first()

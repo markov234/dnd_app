@@ -4,6 +4,7 @@ from models import Character, session
 from add_character_gui import AddCharacterGUI
 from edit_character_gui import EditCharacterGUI
 from character_manager import delete_character
+from random_character import generate_random_character
 
 class CharacterApp:
     def __init__(self, root):
@@ -36,6 +37,7 @@ class CharacterApp:
         ttk.Button(self.button_frame, text="Edit Character", command=self.edit_character).grid(row=0, column=1, padx=5)
         ttk.Button(self.button_frame, text="Delete Character", command=self.delete_character).grid(row=0, column=2, padx=5)
         ttk.Button(self.button_frame, text="Refresh", command=self.load_characters).grid(row=0, column=3, padx=5)
+        ttk.Button(self.button_frame, text= "Generate Random", command=self.generate_random).grid(row=0, column=4, padx=5)
 
         # Load initial data
         self.load_characters()
@@ -80,6 +82,12 @@ class CharacterApp:
             message = delete_character(char_id)  # Call delete function
             messagebox.showinfo("Deletion", message)
             self.load_characters()  # Refresh character list
+
+    def generate_random(self):
+        """Generate a random character and refresh the list."""
+        message = generate_random_character()
+        messagebox.showinfo("Random Character", message)
+        self.load_characters()  # Refresh the character list
 
 
 if __name__ == "__main__":

@@ -43,6 +43,7 @@ class EditCharacterGUI:
             self.entries[stat].insert(0, str(getattr(character, stat)))
 
         # Submit Button
+        # Here, we call the save_changes method from within the EditCharacterGUI class.
         ttk.Button(self.window, text="Save Changes", command=self.save_changes).grid(row=len(fields), column=0, columnspan=2, pady=10)
 
     def save_changes(self):

@@ -28,6 +28,7 @@ class AddCharacterGUI:
             self.entries[stat].insert(0, "10")
 
         # Submit Button
+        # Here, we call the add_character method from within the AddCharacterGUI class.
         ttk.Button(self.window, text="Add Character", command=self.add_character).grid(row=len(fields), column=0, columnspan=2, pady=10)
 
     def add_character(self):
