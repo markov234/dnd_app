@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from models import Character, session
+from PIL import Image, ImageTk
 from add_character_gui import AddCharacterGUI
 from edit_character_gui import EditCharacterGUI
 from character_manager import delete_character
 from random_character import generate_random_character
+import os
 
 class CharacterApp:
     def __init__(self, root):
@@ -20,14 +22,21 @@ class CharacterApp:
         self.title_label.pack(pady=10)
 
         # Treeview (Table) to Display Characters
-        self.tree = ttk.Treeview(self.frame, columns=("ID", "Name", "Class", "Race", "Level"), show="headings")
+        self.tree = ttk.Treeview(self.frame, columns=("ID", "Name", "Class", "Race", "Level", "Image"), show="headings")
         self.tree.heading("ID", text="ID")
         self.tree.heading("Name", text="Name")
         self.tree.heading("Class", text="Class")
         self.tree.heading("Race", text="Race")
         self.tree.heading("Level", text="Level")
+        self.tree.heading("Image", text="Image Path")
 
         self.tree.pack(pady=10, fill="both", expand=True)
+
+        # Character Image Preview
+        self.image_label = ttk.Label(self.frame, text="Character Image Preview")
+        self.image_label.pack(pady=10)
+        self.character_image = ttk.Label(self.frame)
+        self.character_image.pack(pady=5)
 
         # Buttons
         self.button_frame = ttk.Frame(self.frame)
@@ -42,6 +51,9 @@ class CharacterApp:
         # Load initial data
         self.load_characters()
 
+        self.tree.bind("<<TreeviewSelect>>", self.on_character_select)
+
+
     def load_characters(self):
         """Fetch and display all characters in the table."""
         # Clear existing items
@@ -51,7 +63,7 @@ class CharacterApp:
         # Fetch characters from database
         characters = session.query(Character).all()
         for char in characters:
-            self.tree.insert("", "end", values=(char.id, char.name, char.char_class, char.race, char.level))
+            self.tree.insert("", "end", values=(char.id, char.name, char.char_class, char.race, char.level, char.image_path))
 
     def add_character(self):
         """Open the Add Character GUI window."""
@@ -88,6 +100,25 @@ class CharacterApp:
         message = generate_random_character()
         messagebox.showinfo("Random Character", message)
         self.load_characters()  # Refresh the character list
+
+    def on_character_select(self, event):
+        """Load and display the selected character's image, or show 'No Image Available'."""
+        selected = self.tree.selection()
+        if not selected:
+            return
+
+        image_path = self.tree.item(selected, "values")[5]
+
+        if image_path and os.path.exists(image_path):
+            image = Image.open(image_path)
+            image = image.resize((150, 150))
+            photo = ImageTk.PhotoImage(image)
+            self.character_image.configure(image=photo, text="")
+            self.character_image.image = photo  # Keep a reference
+        else:
+            # Clear the image and show "No Image Available"
+            self.character_image.configure(image="", text="No Image Available")
+            self.character_image.image = None
 
 
 if __name__ == "__main__":

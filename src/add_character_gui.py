@@ -1,6 +1,7 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 from character_manager import add_character
+import os
 
 class AddCharacterGUI:
     def __init__(self, parent, refresh_callback):
@@ -29,7 +30,14 @@ class AddCharacterGUI:
 
         # Submit Button
         # Here, we call the add_character method from within the AddCharacterGUI class.
-        ttk.Button(self.window, text="Add Character", command=self.add_character).grid(row=len(fields), column=0, columnspan=2, pady=10)
+        ttk.Button(self.window, text="Add Character", command=self.add_character).grid(row=len(fields) + 1, column=0, columnspan=2, pady=10)
+
+        # Image Upload Button
+        # Here, we call the upload_image method from within the AddCharacterGUI class.
+        self.image_path = None
+        ttk.Label(self.window, text="Character Image:").grid(row=len(fields), column=0, padx=10, pady=5, sticky="w")
+        self.upload_button = ttk.Button(self.window, text="Upload Image", command=self.upload_image)
+        self.upload_button.grid(row=len(fields), column=1, padx=10, pady=5)
 
     def add_character(self):
         """Collect user input and add the character via character_manager.py."""
@@ -50,7 +58,8 @@ class AddCharacterGUI:
 
             # Use the character_manager function
             message = add_character(name, race, char_class, background, alignment, level,
-                                    strength, dexterity, constitution, intelligence, wisdom, charisma)
+                                    strength, dexterity, constitution, intelligence, wisdom, charisma, 
+                                    image_path=self.image_path)
 
             messagebox.showinfo("Success", message)
             self.window.destroy()
@@ -58,6 +67,12 @@ class AddCharacterGUI:
 
         except ValueError:
             messagebox.showerror("Error", "Level and ability scores must be numbers.")
+
+    def upload_image(self):
+        """Open file dialog to select an image."""
+        file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
+        if file_path:
+            self.image_path = file_path
 
 
 

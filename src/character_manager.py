@@ -7,7 +7,8 @@ from models import Character, session
 # (for example, add_character.py and add_character_gui.py both use the add_character method from character_manager.py).
 
 def add_character(name, race, char_class, background=None, alignment=None, level=1, 
-                  strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=10, charisma=10):
+                  strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=10, charisma=10, 
+                  image_path=None):
     """Adds a new character to the database."""
     try:
         if not name or not race or not char_class:
@@ -16,7 +17,8 @@ def add_character(name, race, char_class, background=None, alignment=None, level
         new_character = Character(
             name=name, race=race, char_class=char_class, background=background,
             alignment=alignment, level=level, strength=strength, dexterity=dexterity,
-            constitution=constitution, intelligence=intelligence, wisdom=wisdom, charisma=charisma
+            constitution=constitution, intelligence=intelligence, wisdom=wisdom, charisma=charisma, 
+            image_path=image_path
         )
 
         session.add(new_character)
@@ -28,7 +30,7 @@ def add_character(name, race, char_class, background=None, alignment=None, level
 
 def edit_character(char_id, name=None, race=None, char_class=None, background=None, alignment=None, 
                    level=None, strength=None, dexterity=None, constitution=None, 
-                   intelligence=None, wisdom=None, charisma=None):
+                   intelligence=None, wisdom=None, charisma=None, image_path=None):
     """Edits an existing character in the database."""
     character = session.query(Character).filter_by(id=char_id).first()
 
@@ -48,6 +50,9 @@ def edit_character(char_id, name=None, race=None, char_class=None, background=No
     if intelligence is not None: character.intelligence = intelligence
     if wisdom is not None: character.wisdom = wisdom
     if charisma is not None: character.charisma = charisma
+
+    if image_path is not None:
+        character.image_path = image_path
 
     session.commit()
     return f"Character '{character.name}' (ID: {char_id}) updated successfully!"

@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 from character_manager import edit_character
 from models import session, Character
 
@@ -42,10 +42,24 @@ class EditCharacterGUI:
         for stat in ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]:
             self.entries[stat].insert(0, str(getattr(character, stat)))
 
+        # Image Button
+        self.image_path = character.image_path
+        self.image_label = ttk.Label(self.window, text=f"Current Image: {self.image_path or 'None'}")
+        self.image_label.grid(row=len(fields), column=0, columnspan=2, pady=(10, 0))
+
+        self.upload_button = ttk.Button(self.window, text="Change Image", command=self.upload_image)
+        self.upload_button.grid(row=len(fields) + 1, column=0, columnspan=2, pady=(0, 10))
+
         # Submit Button
         # Here, we call the save_changes method from within the EditCharacterGUI class.
-        ttk.Button(self.window, text="Save Changes", command=self.save_changes).grid(row=len(fields), column=0, columnspan=2, pady=10)
+        ttk.Button(self.window, text="Save Changes", command=self.save_changes).grid(row=len(fields) + 2, column=0, columnspan=2, pady=10)
 
+    def upload_image(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
+        if file_path:
+            self.image_path = file_path
+            self.image_label.config(text=f"Current Image: {self.image_path}")
+    
     def save_changes(self):
         """Collect user input and update the character in the database."""
         try:
@@ -64,7 +78,8 @@ class EditCharacterGUI:
             charisma = int(self.entries["charisma"].get())
 
             message = edit_character(self.char_id, name, race, char_class, background, alignment, level,
-                                     strength, dexterity, constitution, intelligence, wisdom, charisma)
+                                     strength, dexterity, constitution, intelligence, wisdom, charisma, 
+                                     image_path=self.image_path)
 
             messagebox.showinfo("Success", message)
             self.window.destroy()

@@ -27,6 +27,8 @@ class Character(Base):
     wisdom = Column(Integer, default=10)
     charisma = Column(Integer, default=10)
 
+    image_path = Column(String, nullable=True)
+
 # If want more objects, create more classes like Character.
 
 # Create SQLite database
