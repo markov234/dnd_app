@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
+import sys
 
 # Creates a base class for all ORM (Object Relational Mapping) classes.
 # In other words, it creates a base class for all database tables.
@@ -32,7 +34,20 @@ class Character(Base):
 # If want more objects, create more classes like Character.
 
 # Create SQLite database
-engine = create_engine("sqlite:///dnd_characters.db")
+# This method helps identify the path to the database file, 
+# whether running as a script or a compiled app.
+def get_database_path():
+    """Get the path to dnd_characters.db, compatible with PyInstaller and development."""
+    if getattr(sys, 'frozen', False):  # Running as a compiled app
+        base_path = sys._MEIPASS  # Temporary folder where PyInstaller unpacks stuff
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+
+    return os.path.join(base_path, "..", "dnd_characters.db")
+
+DATABASE_URL = f"sqlite:///{get_database_path()}"
+
+engine = create_engine(DATABASE_URL)
 Base.metadata.create_all(engine)
 
 # Create session
