@@ -38,6 +38,17 @@ class CharacterApp:
         self.character_image = ttk.Label(self.frame)
         self.character_image.pack(pady=5)
 
+        # Notes Section Label
+        self.notes_label = ttk.Label(self.frame, text="Character Notes")
+        self.notes_label.pack(pady=5, padx=10, side=tk.RIGHT)
+
+        # Notes Textbox
+        self.notes_text = tk.Text(self.frame, width=40, height=10, wrap="word")
+        self.notes_text.pack(pady=5, padx=10, side=tk.RIGHT)
+
+        # Bind the event to detect changes while typing
+        self.notes_text.bind("<KeyRelease>", self.save_notes)
+
         # Buttons
         self.button_frame = ttk.Frame(self.frame)
         self.button_frame.pack(pady=5)
@@ -107,18 +118,35 @@ class CharacterApp:
         if not selected:
             return
 
+        char_id = int(self.tree.item(selected, "values")[0])
         image_path = self.tree.item(selected, "values")[5]
 
+        # Load and display character image
         if image_path and os.path.exists(image_path):
             image = Image.open(image_path)
             image = image.resize((150, 150))
             photo = ImageTk.PhotoImage(image)
             self.character_image.configure(image=photo, text="")
-            self.character_image.image = photo  # Keep a reference
+            self.character_image.image = photo
         else:
-            # Clear the image and show "No Image Available"
-            self.character_image.configure(image="", text="No Image Available")
-            self.character_image.image = None
+            self.character_image.configure(image=None, text="No Image Available")
+
+        # Fetch notes from the database
+        character = session.query(Character).filter_by(id=char_id).first()
+        if character:
+            self.notes_text.delete("1.0", tk.END)  # Clear old notes
+            self.notes_text.insert("1.0", character.notes or "")  # Insert existing notes
+            self.notes_text.config(state=tk.NORMAL)  # Allow editing
+            self.current_character_id = char_id  # Store the current character ID for saving
+
+    def save_notes(self, event):
+        """Automatically save notes when the user types."""
+        if hasattr(self, 'current_character_id') and self.current_character_id:
+            new_notes = self.notes_text.get("1.0", tk.END).strip()
+            character = session.query(Character).filter_by(id=self.current_character_id).first()
+            if character:
+                character.notes = new_notes
+                session.commit()
 
 
 if __name__ == "__main__":

@@ -30,7 +30,7 @@ def add_character(name, race, char_class, background=None, alignment=None, level
 
 def edit_character(char_id, name=None, race=None, char_class=None, background=None, alignment=None, 
                    level=None, strength=None, dexterity=None, constitution=None, 
-                   intelligence=None, wisdom=None, charisma=None, image_path=None):
+                   intelligence=None, wisdom=None, charisma=None, image_path=None, notes=None):
     """Edits an existing character in the database."""
     character = session.query(Character).filter_by(id=char_id).first()
 
@@ -50,9 +50,8 @@ def edit_character(char_id, name=None, race=None, char_class=None, background=No
     if intelligence is not None: character.intelligence = intelligence
     if wisdom is not None: character.wisdom = wisdom
     if charisma is not None: character.charisma = charisma
-
-    if image_path is not None:
-        character.image_path = image_path
+    if image_path is not None: character.image_path = image_path
+    if notes is not None: character.notes = notes
 
     session.commit()
     return f"Character '{character.name}' (ID: {char_id}) updated successfully!"

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Text, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
@@ -30,6 +30,7 @@ class Character(Base):
     charisma = Column(Integer, default=10)
 
     image_path = Column(String, nullable=True)
+    notes = Column(Text, nullable=True)
 
 # If want more objects, create more classes like Character.
 
